@@ -8,6 +8,7 @@ import { Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { NC_SITE_SETTINGS } from '@/contains/site-settings'
 import getTrans from '@/utils/getTrans'
+import errorHandling from '@/utils/errorHandling'
 
 const MAX_TAGS_LENGTH =
 	NC_SITE_SETTINGS['submissions-settings']?.max_categories_allowed || 5
@@ -17,8 +18,10 @@ interface Props {
 	defaultValue?: NcmazFcCategoryFullFieldsFragmentFragment[]
 }
 
+
 const CategoriesInput: FC<Props> = ({ onChange, defaultValue }) => {
 	const T = getTrans()
+	const [refetchTimes, setRefetchTimes] = useState(0)
 
 	const [queryGetCategories, { loading, error, data, fetchMore, called }] =
 		useLazyQuery(QUERY_GET_CATEGORIES, {
