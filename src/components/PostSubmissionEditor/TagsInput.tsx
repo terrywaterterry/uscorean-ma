@@ -1,5 +1,6 @@
 import { gql, useLazyQuery } from '@apollo/client'
 import { FC, useEffect, useRef, useState } from 'react'
+import errorHandling from '@/utils/errorHandling'
 import Loading from '../Button/Loading'
 import { QUERY_GET_TAGS } from '@/fragments/queries'
 import { NcmazFcTagShortFieldsFragmentFragment } from '@/__generated__/graphql'
@@ -20,6 +21,7 @@ interface TagsInputProps {
 
 const TagsInput: FC<TagsInputProps> = ({ onChange, defaultValue }) => {
 	const T = getTrans()
+	const [refetchTimes, setRefetchTimes] = useState(0)
 
 	const [queryGetTags, { loading, error, data, fetchMore, called }] =
 		useLazyQuery(QUERY_GET_TAGS, {
