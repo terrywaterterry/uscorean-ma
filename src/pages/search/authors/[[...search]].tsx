@@ -49,29 +49,28 @@ const Page: FaustPage<SearchPageQueryGetUsersBySearchQuery> = (props) => {
     `),
 		{
 			notifyOnNetworkStatusChange: true,
-			context: {
-				fetchOptions: {
-					method: process.env.NEXT_PUBLIC_SITE_API_METHOD || 'GET',
-				},
-			},
-			variables: {
-				search,
-				first: GET_USERS_FIRST_COMMON,
-			},
-			onError: (error) => {
-				errorHandling(error)
-			},
 		},
 	)
 
+	useEffect(() => {
+		if (getUsersBySearchResult.error) {
+			errorHandling(getUsersBySearchResult.error)
+		}
+	}, [getUsersBySearchResult.error])
+
 	const handleClickShowMore = () => {
 		if (!getUsersBySearchResult.called) {
-			return getUsersBySearch({
-				variables: {
-					search,
-					after: initPageInfo?.endCursor,
-				},
-			})
+				return getUsersBySearch({
+					variables: {
+						search,
+						after: initPageInfo?.endCursor,
+					},
+					context: {
+						fetchOptions: {
+							method: process.env.NEXT_PUBLIC_SITE_API_METHOD || 'GET',
+						},
+					},
+				})
 		}
 
 		getUsersBySearchResult.fetchMore({

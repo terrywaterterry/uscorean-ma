@@ -62,24 +62,20 @@ const Page: FaustPage<{}> = () => {
 `),
     {
       client,
-      variables: {
-        first: GET_POSTS_FIRST_COMMON_FOR_DASHBOARD,
-      },
       notifyOnNetworkStatusChange: true,
-      context: {
-        fetchOptions: {
-          method: process.env.NEXT_PUBLIC_SITE_API_METHOD || "GET",
-        },
-      },
-      onError: (error) => {
-        if (refetchTimes > 3) {
-          errorHandling(error);
-        }
-        setRefetchTimes(refetchTimes + 1);
-        getPostsOfViewerResult.refetch();
-      },
     }
   );
+
+  useEffect(() => {
+    if (getPostsOfViewerResult.error) {
+      if (refetchTimes > 3) {
+        errorHandling(getPostsOfViewerResult.error);
+        return;
+      }
+      setRefetchTimes((t) => t + 1);
+      getPostsOfViewerResult.refetch();
+    }
+  }, [getPostsOfViewerResult.error]);
 
   useEffect(() => {
     if (isAuthenticated === false) {
@@ -114,6 +110,11 @@ const Page: FaustPage<{}> = () => {
       variables: {
         first: GET_POSTS_FIRST_COMMON_FOR_DASHBOARD,
         status,
+      },
+      context: {
+        fetchOptions: {
+          method: process.env.NEXT_PUBLIC_SITE_API_METHOD || "GET",
+        },
       },
     });
   }, [isAuthenticated, currentTab]);

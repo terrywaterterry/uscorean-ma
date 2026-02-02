@@ -3,6 +3,7 @@ import WidgetAddSubscriberForm from '@/components/WidgetAddSubscriberForm/Widget
 import WidgetCategories from '@/components/WidgetCategories/WidgetCategories'
 import WidgetSocialsFollow from '@/components/WidgetSocialsFollow/WidgetSocialsFollow'
 import React, { FC } from 'react'
+import AdSense from '@/components/AdSense'
 
 export interface SidebarProps {
 	className?: string
@@ -16,6 +17,9 @@ export const Sidebar: FC<SidebarProps> = ({
 	return (
 		<div className={`nc-SingleSidebar lg:sticky lg:top-24 ${className}`}>
 			<WidgetAddSubscriberForm />
+
+			{/* AdSense ad */}
+			<AdSense client="ca-pub-4921950396384050" slot="3626005227" />
 
 			<WidgetSocialsFollow />
 

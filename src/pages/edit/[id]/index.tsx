@@ -41,18 +41,6 @@ const Page: FaustPage<{}> = (props) => {
 			{
 				client,
 				fetchPolicy: 'network-only',
-				context: {
-					fetchOptions: {
-						method: process.env.NEXT_PUBLIC_SITE_API_METHOD || 'GET',
-					},
-				},
-				onError: (error) => {
-					if (refetchTimes > 3) {
-						errorHandling(error)
-					}
-					setRefetchTimes(refetchTimes + 1)
-					refetch()
-				},
 			},
 		)
 
@@ -62,8 +50,23 @@ const Page: FaustPage<{}> = (props) => {
 		}
 		getPostForEditPostPage({
 			variables: { databaseId: router.query.id as string },
+			context: {
+				fetchOptions: {
+					method: process.env.NEXT_PUBLIC_SITE_API_METHOD || 'GET',
+				},
+			},
 		})
 	}, [isAuthenticated])
+
+	useEffect(() => {
+		if (!error) return
+		if (refetchTimes > 3) {
+			errorHandling(error)
+			return
+		}
+		setRefetchTimes((t) => t + 1)
+		refetch()
+	}, [error])
 
 	useEffect(() => {
 		if (isAuthenticated === false) {

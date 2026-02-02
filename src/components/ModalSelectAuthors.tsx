@@ -33,23 +33,19 @@ const ModalSelectAuthors: FC<Props> = ({ onUpdated, initIds = [] }) => {
 
 	const [queryGetUsers, { loading, error, data, fetchMore, refetch }] =
 		useLazyQuery(QUERY_GET_USERS, {
-			variables: { first: 100 },
 			notifyOnNetworkStatusChange: true,
-			context: {
-				fetchOptions: {
-					method: process.env.NEXT_PUBLIC_SITE_API_METHOD || 'GET',
-				},
-			},
-			onError: (error) => {
-				if (refetchTimes > 3) {
-					errorHandling(error)
-					return
-				}
-				setRefetchTimes(refetchTimes + 1)
-
-				refetch()
-			},
 		})
+
+	useEffect(() => {
+		if (error) {
+			if (refetchTimes > 3) {
+				errorHandling(error)
+				return
+			}
+			setRefetchTimes((t) => t + 1)
+			refetch()
+		}
+	}, [error])
 
 	const handleClickShowMore = () => {
 		fetchMore({
@@ -155,7 +151,13 @@ const ModalSelectAuthors: FC<Props> = ({ onUpdated, initIds = [] }) => {
 						}
 						onClick={() => {
 							openModal()
-							queryGetUsers()
+							queryGetUsers({
+								context: {
+									fetchOptions: {
+										method: process.env.NEXT_PUBLIC_SITE_API_METHOD || 'GET',
+									},
+								},
+							})
 						}}
 					>
 						{!!initIds.length && (

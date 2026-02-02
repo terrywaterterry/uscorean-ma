@@ -49,29 +49,28 @@ const Page: FaustPage<SearchPageQueryGetCategoriesBySearchQuery> = (props) => {
     `),
 		{
 			notifyOnNetworkStatusChange: true,
-			context: {
-				fetchOptions: {
-					method: process.env.NEXT_PUBLIC_SITE_API_METHOD || 'GET',
-				},
-			},
-			variables: {
-				search,
-				first: GET_CATEGORIES_FIRST_COMMON,
-			},
-			onError: (error) => {
-				errorHandling(error)
-			},
 		},
 	)
 
+	useEffect(() => {
+		if (getCategoriesBySearchResult.error) {
+			errorHandling(getCategoriesBySearchResult.error)
+		}
+	}, [getCategoriesBySearchResult.error])
+
 	const handleClickShowMore = () => {
 		if (!getCategoriesBySearchResult.called) {
-			return getCategoriesBySearch({
-				variables: {
-					search,
-					after: initPageInfo?.endCursor,
-				},
-			})
+				return getCategoriesBySearch({
+					variables: {
+						search,
+						after: initPageInfo?.endCursor,
+					},
+					context: {
+						fetchOptions: {
+							method: process.env.NEXT_PUBLIC_SITE_API_METHOD || 'GET',
+						},
+					},
+				})
 		}
 
 		getCategoriesBySearchResult.fetchMore({

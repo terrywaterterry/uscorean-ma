@@ -27,20 +27,18 @@ const ModalTags: FC<ModalTagsProps> = ({}) => {
 	const [queryGetTags, { loading, error, data, fetchMore, refetch }] =
 		useLazyQuery(QUERY_GET_TAGS, {
 			notifyOnNetworkStatusChange: true,
-			context: {
-				fetchOptions: {
-					method: process.env.NEXT_PUBLIC_SITE_API_METHOD || 'GET',
-				},
-			},
-			onError: (error) => {
-				if (refetchTimes > 3) {
-					errorHandling(error)
-					return
-				}
-				setRefetchTimes(refetchTimes + 1)
-				refetch()
-			},
 		})
+
+	useEffect(() => {
+		if (error) {
+			if (refetchTimes > 3) {
+				errorHandling(error)
+				return
+			}
+			setRefetchTimes((t) => t + 1)
+			refetch()
+		}
+	}, [error])
 
 	const tags = (data?.tags?.nodes || []) as FragmentType<
 		typeof NC_TAG_SHORT_FIELDS_FRAGMENT
@@ -139,7 +137,13 @@ const ModalTags: FC<ModalTagsProps> = ({}) => {
 						fontSize="text-sm font-medium"
 						onClick={() => {
 							openModal()
-							queryGetTags()
+							queryGetTags({
+								context: {
+									fetchOptions: {
+										method: process.env.NEXT_PUBLIC_SITE_API_METHOD || 'GET',
+									},
+								},
+							})
 						}}
 					>
 						<TagIcon className="-ms-1.5 me-2 h-5 w-5" />
